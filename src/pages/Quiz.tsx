@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { topics } from '@/data/topics';
 import { getQuestionsByTopic } from '@/data/questions';
 import { useQuizStore } from '@/store';
-import { ArrowLeft, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Trophy, Star } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -25,12 +25,18 @@ export default function Quiz() {
     setUserAnswer,
     setShowExplanation,
     updateProgress,
-    setCurrentQuestionIndex
+    setCurrentQuestionIndex,
+    wrongQuestions,
+    favouriteQuestions,
+    toggleFavouriteQuestion
   } = useQuizStore();
   
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const userAnswer = userAnswers[question?.id || ''];
   const showExplanation = showExplanations[question?.id || ''] || false;
+  
+  const isFavourite = question ? favouriteQuestions.includes(question.id) : false;
+  const isWrong = question ? wrongQuestions.includes(question.id) : false;
   
   useEffect(() => {
     if (topicId) {
@@ -112,9 +118,22 @@ export default function Quiz() {
           <div className="bg-white rounded-2xl p-6 shadow-xl border border-slate-100">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold text-slate-800">{topic.name}</h1>
-              <span className="text-slate-600 font-medium">
-                第 {questionIndex + 1} 题 / 共 {questions.length} 题
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-slate-600 font-medium">
+                  第 {questionIndex + 1} 题 / 共 {questions.length} 题
+                </span>
+                <button
+                  onClick={() => question && toggleFavouriteQuestion(question.id, !isFavourite)}
+                  className={cn(
+                    "p-2 rounded-xl transition-all duration-200",
+                    isFavourite
+                      ? "bg-amber-100 text-amber-600 hover:bg-amber-200"
+                      : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                  )}
+                >
+                  <Star className={cn("w-5 h-5", isFavourite && "fill-current")} />
+                </button>
+              </div>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div 
@@ -134,6 +153,12 @@ export default function Quiz() {
               {question.year && (
                 <span className="text-xs px-3 py-1 bg-slate-100 text-slate-600 rounded-full">
                   {question.year}年
+                </span>
+              )}
+              {isWrong && (
+                <span className="text-xs px-3 py-1 bg-red-100 text-red-600 rounded-full flex items-center gap-1">
+                  <XCircle className="w-3 h-3" />
+                  错题
                 </span>
               )}
             </div>

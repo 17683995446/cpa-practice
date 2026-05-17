@@ -17,7 +17,9 @@ interface QuizStore {
   resetTopicProgress: (topicId: string) => void;
   getProgress: (topicId: string) => UserProgress;
   toggleWrongQuestion: (questionId: string, isWrong: boolean) => void;
+  removeWrongQuestion: (questionId: string) => void;
   toggleFavouriteQuestion: (questionId: string, isFavourite: boolean) => void;
+  removeFavouriteQuestion: (questionId: string) => void;
   clearAllData: () => void;
 }
 
@@ -132,34 +134,46 @@ export const useQuizStore = create<QuizStore>()(
       },
       
       toggleWrongQuestion: (questionId: string, isWrong: boolean) => {
-        set((state) => {
-          if (isWrong && !state.wrongQuestions.includes(questionId)) {
-            return {
-              wrongQuestions: [...state.wrongQuestions, questionId]
-            };
-          } else if (!isWrong) {
-            return {
-              wrongQuestions: state.wrongQuestions.filter(id => id !== questionId)
-            };
-          }
-          return state;
-        });
-      },
-      
-      toggleFavouriteQuestion: (questionId: string, isFavourite: boolean) => {
-        set((state) => {
-          if (isFavourite && !state.favouriteQuestions.includes(questionId)) {
-            return {
-              favouriteQuestions: [...state.favouriteQuestions, questionId]
-            };
-          } else if (!isFavourite) {
-            return {
-              favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId)
-            };
-          }
-          return state;
-        });
-      },
+    set((state) => {
+      if (isWrong && !state.wrongQuestions.includes(questionId)) {
+        return {
+          wrongQuestions: [...state.wrongQuestions, questionId]
+        };
+      } else if (!isWrong) {
+        return {
+          wrongQuestions: state.wrongQuestions.filter(id => id !== questionId)
+        };
+      }
+      return state;
+    });
+  },
+
+  removeWrongQuestion: (questionId: string) => {
+    set((state) => ({
+      wrongQuestions: state.wrongQuestions.filter(id => id !== questionId)
+    }));
+  },
+
+  toggleFavouriteQuestion: (questionId: string, isFavourite: boolean) => {
+    set((state) => {
+      if (isFavourite && !state.favouriteQuestions.includes(questionId)) {
+        return {
+          favouriteQuestions: [...state.favouriteQuestions, questionId]
+        };
+      } else if (!isFavourite) {
+        return {
+          favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId)
+        };
+      }
+      return state;
+    });
+  },
+
+  removeFavouriteQuestion: (questionId: string) => {
+    set((state) => ({
+      favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId)
+    }));
+  },
       
       clearAllData: () => {
         set(() => ({

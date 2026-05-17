@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { topics } from '@/data/topics';
 import { questions } from '@/data/questions';
 import { useQuizStore } from '@/store';
-import { BookOpen, CheckCircle, TrendingUp, FileCode, ChevronRight } from 'lucide-react';
+import { BookOpen, CheckCircle2, TrendingUp, FileCode, ChevronRight, XCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
-  const { userProgress } = useQuizStore();
+  const { userProgress, wrongQuestions, favouriteQuestions } = useQuizStore();
 
   const totalQuestions = questions.length;
   const totalCompleted = Object.values(userProgress).reduce(
@@ -34,7 +34,7 @@ export default function Home() {
           <p className="text-xl text-slate-600">海量真题，AI解析，高效备考</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 rounded-xl">
@@ -49,7 +49,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
             <div className="flex items-center">
               <div className="p-3 bg-green-100 rounded-xl">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-slate-600">已完成</p>
@@ -70,15 +70,68 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-slate-800">选择科目</h2>
-          <Link to="/docs">
-            <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-              <FileCode className="w-4 h-4" />
-              技术文档
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Link
+            to="/wrong-questions"
+            className="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-red-200 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-200 rounded-xl">
+                  <XCircle className="w-6 h-6 text-red-700" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">错题本</h3>
+                  <p className="text-slate-600 text-sm">重点复习错题</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-red-600">{wrongQuestions.length}</div>
+                <div className="text-slate-600 text-sm">题目</div>
+              </div>
+            </div>
           </Link>
+          <Link
+            to="/favourite-questions"
+            className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-amber-200 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-amber-200 rounded-xl">
+                  <Star className="w-6 h-6 text-amber-700" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">收藏夹</h3>
+                  <p className="text-slate-600 text-sm">收藏重点题目</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-amber-600">{favouriteQuestions.length}</div>
+                <div className="text-slate-600 text-sm">题目</div>
+              </div>
+            </div>
+          </Link>
+          <Link
+            to="/docs"
+            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-200 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-200 rounded-xl">
+                  <FileCode className="w-6 h-6 text-blue-700" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800">技术文档</h3>
+                  <p className="text-slate-600 text-sm">查看系统架构</p>
+                </div>
+              </div>
+              <ChevronRight className="w-6 h-6 text-blue-700" />
+            </div>
+          </Link>
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6">选择科目</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

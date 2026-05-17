@@ -91,7 +91,7 @@ export default function Topic() {
             <h2 className="text-xl font-bold text-slate-800">题目列表</h2>
           </div>
           <div className="divide-y divide-slate-100">
-            {questions.slice(0, 100).map((question, index) => {
+            {questions.map((question, index) => {
               const isCompleted = progress.completedQuestions.includes(question.id);
               const userAnswer = userAnswers[question.id];
               const isCorrect = userAnswer === question.correctAnswer;
@@ -147,11 +147,6 @@ export default function Topic() {
               );
             })}
           </div>
-          {questions.length > 100 && (
-            <div className="p-6 text-center text-slate-500 text-sm">
-              仅显示前100题，更多题目请开始刷题
-            </div>
-          )}
         </div>
       </div>
     </div>

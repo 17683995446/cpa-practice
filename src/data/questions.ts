@@ -58,7 +58,7 @@ const accountingBaseQuestions: Question[] = [
     topicId: 'accounting',
     content: '某公司于2020年12月1日从银行借入100万元，期限6个月，年利率6%，到期一次还本付息。该公司应付利息的金额为（ ）万元。',
     options: ['3', '6', '3.5', '4'],
-    correctAnswer: 1,
+    correctAnswer: 0,
     explanation: '应付利息=100×6%×6/12=3万元。注意：如果是按月计息，则为100×6%/12×6=3万元。本题是按半年计息，所以是100×6%/2=3万元。',
     memoryTip: '利息计算公式：本金×利率×时间，注意题目中时间单位',
     difficulty: 'medium',
