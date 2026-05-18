@@ -23,6 +23,16 @@ interface QuizStore {
   clearAllData: () => void;
 }
 
+// 内部使用 Set 来加速查找，但持久化时转换为数组
+interface PersistedQuizStore {
+  userProgress: Record<string, UserProgress>;
+  currentQuestionIndex: Record<string, number>;
+  userAnswers: Record<string, number | null>;
+  showExplanations: Record<string, boolean>;
+  wrongQuestions: string[];
+  favouriteQuestions: string[];
+}
+
 export const useQuizStore = create<QuizStore>()(
   persist(
     (set, get) => ({
@@ -46,11 +56,22 @@ export const useQuizStore = create<QuizStore>()(
             ? currentProgress.completedQuestions
             : [...currentProgress.completedQuestions, questionId];
           
-          let newWrongQuestions = [...state.wrongQuestions];
-          if (!isCorrect && !newWrongQuestions.includes(questionId)) {
-            newWrongQuestions.push(questionId);
-          } else if (isCorrect) {
-            newWrongQuestions = newWrongQuestions.filter(id => id !== questionId);
+          // 使用 Set 加速查找
+          const wrongSet = new Set(state.wrongQuestions);
+          let newWrongQuestions: string[];
+          
+          if (!isCorrect) {
+            if (!wrongSet.has(questionId)) {
+              newWrongQuestions = [...state.wrongQuestions, questionId];
+            } else {
+              newWrongQuestions = state.wrongQuestions;
+            }
+          } else {
+            if (wrongSet.has(questionId)) {
+              newWrongQuestions = state.wrongQuestions.filter(id => id !== questionId);
+            } else {
+              newWrongQuestions = state.wrongQuestions;
+            }
           }
           
           return {
@@ -134,46 +155,52 @@ export const useQuizStore = create<QuizStore>()(
       },
       
       toggleWrongQuestion: (questionId: string, isWrong: boolean) => {
-    set((state) => {
-      if (isWrong && !state.wrongQuestions.includes(questionId)) {
-        return {
-          wrongQuestions: [...state.wrongQuestions, questionId]
-        };
-      } else if (!isWrong) {
-        return {
-          wrongQuestions: state.wrongQuestions.filter(id => id !== questionId)
-        };
-      }
-      return state;
-    });
-  },
+        set((state) => {
+          const wrongSet = new Set(state.wrongQuestions);
+          if (isWrong) {
+            if (!wrongSet.has(questionId)) {
+              return { wrongQuestions: [...state.wrongQuestions, questionId] };
+            }
+          } else {
+            if (wrongSet.has(questionId)) {
+              return { wrongQuestions: state.wrongQuestions.filter(id => id !== questionId) };
+            }
+          }
+          return state;
+        });
+      },
 
-  removeWrongQuestion: (questionId: string) => {
-    set((state) => ({
-      wrongQuestions: state.wrongQuestions.filter(id => id !== questionId)
-    }));
-  },
+      removeWrongQuestion: (questionId: string) => {
+        set((state) => {
+          const wrongSet = new Set(state.wrongQuestions);
+          if (!wrongSet.has(questionId)) return state;
+          return { wrongQuestions: state.wrongQuestions.filter(id => id !== questionId) };
+        });
+      },
 
-  toggleFavouriteQuestion: (questionId: string, isFavourite: boolean) => {
-    set((state) => {
-      if (isFavourite && !state.favouriteQuestions.includes(questionId)) {
-        return {
-          favouriteQuestions: [...state.favouriteQuestions, questionId]
-        };
-      } else if (!isFavourite) {
-        return {
-          favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId)
-        };
-      }
-      return state;
-    });
-  },
+      toggleFavouriteQuestion: (questionId: string, isFavourite: boolean) => {
+        set((state) => {
+          const favSet = new Set(state.favouriteQuestions);
+          if (isFavourite) {
+            if (!favSet.has(questionId)) {
+              return { favouriteQuestions: [...state.favouriteQuestions, questionId] };
+            }
+          } else {
+            if (favSet.has(questionId)) {
+              return { favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId) };
+            }
+          }
+          return state;
+        });
+      },
 
-  removeFavouriteQuestion: (questionId: string) => {
-    set((state) => ({
-      favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId)
-    }));
-  },
+      removeFavouriteQuestion: (questionId: string) => {
+        set((state) => {
+          const favSet = new Set(state.favouriteQuestions);
+          if (!favSet.has(questionId)) return state;
+          return { favouriteQuestions: state.favouriteQuestions.filter(id => id !== questionId) };
+        });
+      },
       
       clearAllData: () => {
         set(() => ({
