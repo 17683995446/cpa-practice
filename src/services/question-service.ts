@@ -37,24 +37,30 @@ export class QuestionService {
     wrongQuestionIds: string[] = [],
     favouriteQuestionIds: string[] = []
   ): Question[] {
+    // 使用 Set 来提升查找性能
+    const wrongSet = new Set(wrongQuestionIds)
+    const favouriteSet = new Set(favouriteQuestionIds)
+    const yearSet = filter.year ? new Set(filter.year) : null
+    const difficultySet = filter.difficulty && filter.difficulty.length > 0 ? new Set(filter.difficulty) : null
+
     return allQuestions.filter(question => {
       if (filter.topicId && question.topicId !== filter.topicId) {
         return false
       }
 
-      if (filter.difficulty && filter.difficulty.length > 0 && !filter.difficulty.includes(question.difficulty)) {
+      if (difficultySet && !difficultySet.has(question.difficulty)) {
         return false
       }
 
-      if (filter.year && filter.year.length > 0 && question.year && !filter.year.includes(question.year)) {
+      if (yearSet && question.year && !yearSet.has(question.year)) {
         return false
       }
 
-      if (filter.onlyWrong && !wrongQuestionIds.includes(question.id)) {
+      if (filter.onlyWrong && !wrongSet.has(question.id)) {
         return false
       }
 
-      if (filter.onlyFavourites && !favouriteQuestionIds.includes(question.id)) {
+      if (filter.onlyFavourites && !favouriteSet.has(question.id)) {
         return false
       }
 
