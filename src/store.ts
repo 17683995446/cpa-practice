@@ -52,7 +52,10 @@ export const useQuizStore = create<QuizStore>()(
             totalAttempts: 0
           };
           
-          const newCompletedQuestions = currentProgress.completedQuestions.includes(questionId)
+          // 检查这道题之前是否已经答对过
+          const hasAnsweredBefore = currentProgress.completedQuestions.includes(questionId);
+          
+          const newCompletedQuestions = hasAnsweredBefore
             ? currentProgress.completedQuestions
             : [...currentProgress.completedQuestions, questionId];
           
@@ -74,15 +77,20 @@ export const useQuizStore = create<QuizStore>()(
             }
           }
           
+          // 只有在第一次答对时才增加 correctAnswers
+          // 如果之前已经答对过，就不再重复累加
+          let newCorrectAnswers = currentProgress.correctAnswers;
+          if (isCorrect && !hasAnsweredBefore) {
+            newCorrectAnswers = currentProgress.correctAnswers + 1;
+          }
+          
           return {
             userProgress: {
               ...state.userProgress,
               [topicId]: {
                 ...currentProgress,
                 completedQuestions: newCompletedQuestions,
-                correctAnswers: isCorrect 
-                  ? currentProgress.correctAnswers + 1 
-                  : currentProgress.correctAnswers,
+                correctAnswers: newCorrectAnswers,
                 totalAttempts: currentProgress.totalAttempts + 1
               }
             },
