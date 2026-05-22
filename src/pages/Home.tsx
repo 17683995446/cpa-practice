@@ -138,7 +138,9 @@ export default function Home() {
           {topics.map((topic) => {
             const progress = userProgress[topic.id];
             const completedCount = progress?.completedQuestions.length || 0;
-            const progressPercent = Math.round((completedCount / topic.questionCount) * 100);
+            const progressPercent = topic.questionCount > 0
+              ? Math.round((completedCount / topic.questionCount) * 100)
+              : 0;
 
             return (
               <Link
@@ -152,7 +154,7 @@ export default function Home() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">
-                      {completedCount.toLocaleString()} / {topic.questionCount.toLocaleString()}
+                      已完成 {completedCount.toLocaleString()} / {topic.questionCount.toLocaleString()} 题
                     </span>
                     <span className="font-semibold text-blue-600">{progressPercent}%</span>
                   </div>

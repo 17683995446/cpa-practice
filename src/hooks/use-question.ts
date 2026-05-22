@@ -50,6 +50,13 @@ export function useQuestions(topicId?: string) {
     if (!topicId) return null
     return useQuizStore.getState().getProgress(topicId)
   }, [topicId])
+  
+  // 订阅进度更新以确保UI同步
+  const { userProgress } = useQuizStore()
+  const syncedProgress = useMemo(() => {
+    if (!topicId || !userProgress) return progress
+    return userProgress[topicId] || progress
+  }, [topicId, userProgress, progress])
 
   return {
     allQuestions,
@@ -59,7 +66,7 @@ export function useQuestions(topicId?: string) {
     easyQuestions,
     mediumQuestions,
     hardQuestions,
-    progress,
+    progress: syncedProgress,
     totalQuestions: allQuestions.length,
   }
 }
