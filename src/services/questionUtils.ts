@@ -2,7 +2,21 @@ import { Question } from '@/types';
 import { questions as allQuestions } from '@/data/questions';
 
 export function getQuestionsByIds(questionIds: string[]): Question[] {
-  return allQuestions.filter(q => questionIds.includes(q.id));
+  // 按照用户指定的顺序返回题目，而不是原始数据顺序
+  const questionMap = new Map(allQuestions.map(q => [q.id, q]));
+  return questionIds
+    .map(id => questionMap.get(id))
+    .filter((q): q is Question => q !== undefined);
+}
+
+export function getQuestionIndexInTopic(questionId: string): number {
+  // 找到某道题在其科目中的索引位置
+  const question = allQuestions.find(q => q.id === questionId);
+  if (!question) return 0;
+  
+  const topicQuestions = allQuestions.filter(q => q.topicId === question.topicId);
+  const index = topicQuestions.findIndex(q => q.id === questionId);
+  return Math.max(0, index);
 }
 
 export function getWrongQuestions(wrongQuestionIds: string[]): Question[] {

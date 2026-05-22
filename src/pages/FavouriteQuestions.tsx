@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuizStore } from '@/store';
-import { getFavouriteQuestions } from '@/services/questionUtils';
+import { getFavouriteQuestions, getQuestionIndexInTopic } from '@/services/questionUtils';
 import { ArrowLeft, Star, Trash2 } from 'lucide-react';
 import { topics } from '@/data/topics';
 
@@ -71,11 +71,12 @@ export default function FavouriteQuestions() {
               const topic = getTopicById(question.topicId);
               const userAnswer = userAnswers[question.id];
               const isCorrect = userAnswer === question.correctAnswer;
+              const questionIndex = getQuestionIndexInTopic(question.id);
               
               return (
                 <Link
                   key={question.id}
-                  to={`/quiz/${question.topicId}/0`}
+                  to={`/quiz/${question.topicId}/${questionIndex}`}
                   className="block bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100"
                 >
                   <div className="flex items-start justify-between">
