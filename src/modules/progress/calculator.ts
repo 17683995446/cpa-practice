@@ -20,7 +20,8 @@ export class ProgressCalculatorImpl implements ProgressCalculator {
       completedQuestions: progress.completedQuestions.length,
       correctAnswers: progress.correctAnswers,
       accuracy: this.calculateAccuracy(progress.correctAnswers, progress.totalAttempts),
-      topicsCompleted: 0
+      topicsCompleted: 0,
+      totalAttempts: progress.totalAttempts
     };
   }
 
@@ -37,7 +38,8 @@ export class ProgressCalculatorImpl implements ProgressCalculator {
       completedQuestions,
       correctAnswers,
       accuracy: this.calculateAccuracy(correctAnswers, totalQuestions),
-      topicsCompleted
+      topicsCompleted,
+      totalAttempts: totalQuestions
     };
   }
 

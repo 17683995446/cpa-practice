@@ -45,4 +45,5 @@ export interface ProgressStats {
   correctAnswers: number;
   accuracy: number;
   topicsCompleted: number;
+  totalAttempts?: number;
 }
