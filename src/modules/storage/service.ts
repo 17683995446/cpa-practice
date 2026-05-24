@@ -20,12 +20,21 @@ export interface PersistenceService {
 export class PersistenceServiceImpl implements PersistenceService {
   constructor(private adapter: StorageAdapter) {}
 
+  private isValidObject(value: unknown): value is Record<string, unknown> {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  private isValidArray(value: unknown): value is unknown[] {
+    return Array.isArray(value);
+  }
+
   saveUserProgress(progress: Record<TopicId, UserProgress>): void {
     this.adapter.setItem(STORAGE_KEYS.USER_PROGRESS, progress);
   }
 
   loadUserProgress(): Record<TopicId, UserProgress> {
-    return this.adapter.getItem<Record<TopicId, UserProgress>>(STORAGE_KEYS.USER_PROGRESS) || {};
+    const value = this.adapter.getItem<Record<TopicId, UserProgress>>(STORAGE_KEYS.USER_PROGRESS);
+    return this.isValidObject(value) ? value : {};
   }
 
   saveWrongQuestions(questions: QuestionId[]): void {
@@ -33,7 +42,8 @@ export class PersistenceServiceImpl implements PersistenceService {
   }
 
   loadWrongQuestions(): QuestionId[] {
-    return this.adapter.getItem<QuestionId[]>(STORAGE_KEYS.WRONG_QUESTIONS) || [];
+    const value = this.adapter.getItem<QuestionId[]>(STORAGE_KEYS.WRONG_QUESTIONS);
+    return this.isValidArray(value) ? value : [];
   }
 
   saveFavouriteQuestions(questions: QuestionId[]): void {
@@ -41,7 +51,8 @@ export class PersistenceServiceImpl implements PersistenceService {
   }
 
   loadFavouriteQuestions(): QuestionId[] {
-    return this.adapter.getItem<QuestionId[]>(STORAGE_KEYS.FAVOURITE_QUESTIONS) || [];
+    const value = this.adapter.getItem<QuestionId[]>(STORAGE_KEYS.FAVOURITE_QUESTIONS);
+    return this.isValidArray(value) ? value : [];
   }
 
   saveCurrentQuestionIndex(index: Record<TopicId, number>): void {
@@ -49,7 +60,8 @@ export class PersistenceServiceImpl implements PersistenceService {
   }
 
   loadCurrentQuestionIndex(): Record<TopicId, number> {
-    return this.adapter.getItem<Record<TopicId, number>>(STORAGE_KEYS.CURRENT_QUESTION_INDEX) || {};
+    const value = this.adapter.getItem<Record<TopicId, number>>(STORAGE_KEYS.CURRENT_QUESTION_INDEX);
+    return this.isValidObject(value) ? value : {};
   }
 
   saveUserAnswers(answers: Record<QuestionId, number | null>): void {
@@ -57,7 +69,8 @@ export class PersistenceServiceImpl implements PersistenceService {
   }
 
   loadUserAnswers(): Record<QuestionId, number | null> {
-    return this.adapter.getItem<Record<QuestionId, number | null>>(STORAGE_KEYS.USER_ANSWERS) || {};
+    const value = this.adapter.getItem<Record<QuestionId, number | null>>(STORAGE_KEYS.USER_ANSWERS);
+    return this.isValidObject(value) ? value : {};
   }
 
   saveShowExplanations(explanations: Record<QuestionId, boolean>): void {
@@ -65,7 +78,8 @@ export class PersistenceServiceImpl implements PersistenceService {
   }
 
   loadShowExplanations(): Record<QuestionId, boolean> {
-    return this.adapter.getItem<Record<QuestionId, boolean>>(STORAGE_KEYS.SHOW_EXPLANATIONS) || {};
+    const value = this.adapter.getItem<Record<QuestionId, boolean>>(STORAGE_KEYS.SHOW_EXPLANATIONS);
+    return this.isValidObject(value) ? value : {};
   }
 
   clearAll(): void {
